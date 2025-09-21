@@ -46,6 +46,8 @@ import { useState } from "react";
 function TodoApp() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [editIndex, setEditIndex] = useState(null); //task yang sedang diedit
+  const [editText, setEditText] = useState(""); //isi teks saat edit
 
   const addTask = () => {
     if (task.trim() === "") return;
@@ -55,6 +57,24 @@ function TodoApp() {
 
   const deleteTask = (index) => {
     setTasks(tasks.filter((_, i) => i !== index));
+  };
+
+  const startEdit = (index) => {
+    setEditIndex(index);
+    setEditText(tasks[index]);
+  };
+
+  const saveEdit = () => {
+    const updated = [...tasks];
+    updated[editIndex] = editText;
+    setTasks(updated);
+    setEditIndex(null);
+    setEditText("");
+  };
+
+  const cancelEdit = () => {
+    setEditIndex(null);
+    setEditText("");
   };
 
   return (
@@ -90,21 +110,78 @@ function TodoApp() {
               backgroundColor: "#333",
             }}
           >
-            <span>{t}</span>
-            <button
-              onClick={() => deleteTask(index)}
-              style={{
-                marginLeft: "10px",
-                backgroundColor: "#ff4d4d",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                padding: "4px 8px",
-                cursor: "pointer",
-              }}
-            >
-              X
-            </button>
+            {editIndex === index ? (
+              <>
+                <input
+                  type="text"
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  style={{
+                    flex: 1,
+                    marginRight: "10px",
+                    padding: "6px",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc",
+                  }}
+                />
+                <button
+                  onClick={saveEdit}
+                  style={{
+                    marginRight: "5px",
+                    backgroundColor: "#4caf50",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "4px 8px",
+                  }}
+                >
+                  ✅
+                </button>
+                <button
+                  onClick={cancelEdit}
+                  style={{
+                    backgroundColor: "#aaa",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "4px 8px",
+                  }}
+                >
+                  ❌
+                </button>
+              </>
+            ) : (
+              <>
+                <span>{t}</span>
+                <div>
+                  <button
+                    onClick={() => startEdit(index)}
+                    style={{
+                      marginRight: "5px",
+                      backgroundColor: "#2196f3",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                    }}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => deleteTask(index)}
+                    style={{
+                      backgroundColor: "#ff4d4d",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                    }}
+                  >
+                    ❌
+                  </button>
+                </div>
+              </>
+            )}
           </li>
         ))}
       </ul>
